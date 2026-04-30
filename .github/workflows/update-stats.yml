@@ -22,8 +22,7 @@ jobs:
           STARS=$(echo "$GH" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
           FORKS=$(echo  "$GH" | python3 -c "import sys,json; print(json.load(sys.stdin)['forks_count'])")
 
-          # PyPI total downloads (all-time, including CI) via pepy.tech badge SVG
-          # pepy.tech badge returns the canonical all-time total including CI downloads
+          # PyPI downloads (last 3 months, including CI) via pepy.tech badge SVG
           BADGE=$(curl -sL "https://static.pepy.tech/badge/luminaire")
           DOWNLOADS=$(echo "$BADGE" | python3 -c "
 import sys, re
