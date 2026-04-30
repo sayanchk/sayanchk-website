@@ -56,7 +56,12 @@
     <div class="cards">
 
       <div class="software-card">
-        <div class="software-icon">🔦</div>
+        <div style="flex-shrink:0;display:flex;align-items:center;justify-content:center;width:80px;">
+          <img src="https://raw.githubusercontent.com/zillow/luminaire/master/docs/assets/luminaire_logo.svg"
+               alt="Luminaire logo"
+               style="width:72px;height:72px;object-fit:contain;"
+               onerror="this.outerHTML='<span style=\'font-size:3rem\'>🔦</span>'" />
+        </div>
         <div>
           <div class="software-title">
             <a href="https://zillow.github.io/luminaire/" target="_blank" rel="noopener noreferrer">Luminaire</a>
@@ -74,6 +79,66 @@
             <a href="https://pypi.org/project/luminaire/" target="_blank" rel="noopener noreferrer" class="link-pill">📦 PyPI</a>
           </div>
         </div>
+      </div>
+
+      <!-- Books -->
+      <h2 style="font-size:0.85rem;font-weight:700;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin:1rem 0 0.75rem;">Featured In Books</h2>
+
+      <div class="pub-list" style="gap:1rem;">
+
+        <div class="pub-card">
+          <div class="pub-num">a</div>
+          <div class="pub-content">
+            <div class="pub-title">
+              <a href="https://www.amazon.com/dp/9798363295751" target="_blank" rel="noopener noreferrer">
+                Modern Time Series Anomaly Detection with Python and R Code Examples
+              </a>
+            </div>
+            <div class="pub-meta">
+              <span class="pub-tag">Chris Kuo</span>
+            </div>
+            <div class="pub-links">
+              <a href="https://www.amazon.com/dp/9798363295751" target="_blank" rel="noopener noreferrer" class="link-pill">📖 Amazon</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="pub-card">
+          <div class="pub-num">b</div>
+          <div class="pub-content">
+            <div class="pub-title">
+              <a href="https://www.packtpub.com/en-us/product/machine-learning-for-time-series-with-python-9781801819626" target="_blank" rel="noopener noreferrer">
+                Machine Learning for Time Series with Python
+              </a>
+            </div>
+            <div class="pub-meta">
+              <span class="pub-tag">Ben Auffarth</span>
+              <span class="pub-tag">Packt, Oct 2021</span>
+            </div>
+            <div class="pub-links">
+              <a href="https://www.packtpub.com/en-us/product/machine-learning-for-time-series-with-python-9781801819626" target="_blank" rel="noopener noreferrer" class="link-pill">📖 Packt</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="pub-card">
+          <div class="pub-num">c</div>
+          <div class="pub-content">
+            <div class="pub-title">
+              <a href="https://www.amazon.com/Python-Finance-Cookbook-effective-financial/dp/1803243198" target="_blank" rel="noopener noreferrer">
+                Python for Finance Cookbook: Over 80 powerful recipes for effective financial data analysis, 2nd Edition
+              </a>
+            </div>
+            <div class="pub-meta">
+              <span class="pub-tag">Eryk Lewinson</span>
+              <span class="pub-tag">Packt, Dec 2022</span>
+            </div>
+            <div class="pub-links">
+              <a href="https://www.amazon.com/Python-Finance-Cookbook-effective-financial/dp/1803243198" target="_blank" rel="noopener noreferrer" class="link-pill">📖 Amazon</a>
+            </div>
+          </div>
+        </div>
+
       </div>
 
     </div>
