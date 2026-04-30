@@ -79,7 +79,7 @@
               🍴 <span id="lum-forks">…</span> forks
             </span>
             <span class="lum-stat" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;font-weight:600;color:var(--text-secondary);background:var(--tag-bg);padding:0.3rem 0.75rem;border-radius:20px;">
-              📦 <span id="lum-downloads">…</span> downloads <span style="font-weight:400;color:var(--text-muted);">(all time)</span>
+              📦 <span id="lum-downloads">…</span> total downloads
             </span>
           </div>
           <div class="pub-links" style="margin-top:0.75rem;">
@@ -170,33 +170,15 @@
     }
 
     async function loadLuminaireStats() {
-      // GitHub: stars & forks
       try {
-        const res = await fetch('https://api.github.com/repos/zillow/luminaire', {
-          headers: { 'Accept': 'application/vnd.github.v3+json' }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          document.getElementById('lum-stars').textContent = fmt(data.stargazers_count);
-          document.getElementById('lum-forks').textContent  = fmt(data.forks_count);
-        }
+        const res = await fetch('data/luminaire-stats.json');
+        if (!res.ok) throw new Error('fetch failed');
+        const d = await res.json();
+        document.getElementById('lum-stars').textContent     = fmt(d.stars);
+        document.getElementById('lum-forks').textContent     = fmt(d.forks);
+        document.getElementById('lum-downloads').textContent = fmt(d.downloads);
       } catch (e) {
-        console.warn('GitHub API error:', e);
-      }
-
-      // PyPI: all-time total downloads (sum of all "without_mirrors" records)
-      try {
-        const res = await fetch('https://pypistats.org/api/packages/luminaire/overall?mirrors=false');
-        if (res.ok) {
-          const json = await res.json();
-          // The API returns rows per date; sum the `downloads` field across all rows
-          const total = json.data.reduce((acc, row) => acc + (row.downloads || 0), 0);
-          if (total > 0) {
-            document.getElementById('lum-downloads').textContent = fmt(total);
-          }
-        }
-      } catch (e) {
-        console.warn('PyPI stats error:', e);
+        console.warn('Could not load Luminaire stats:', e);
       }
     }
 

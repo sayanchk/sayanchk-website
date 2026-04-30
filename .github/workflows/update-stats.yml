@@ -1,0 +1,46 @@
+name: Update Luminaire Stats
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # runs daily at 6am UTC
+  workflow_dispatch:        # allow manual trigger from GitHub Actions tab
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch GitHub and PyPI stats
+        run: |
+          # GitHub stars & forks
+          GH=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/repos/zillow/luminaire)
+          STARS=$(echo "$GH" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
+          FORKS=$(echo  "$GH" | python3 -c "import sys,json; print(json.load(sys.stdin)['forks_count'])")
+
+          # PyPI total downloads (all-time, excluding mirrors)
+          PYPI=$(curl -s "https://pypistats.org/api/packages/luminaire/overall?mirrors=false")
+          DOWNLOADS=$(echo "$PYPI" | python3 -c \
+            "import sys,json; d=json.load(sys.stdin); print(sum(r['downloads'] for r in d['data']))")
+
+          mkdir -p data
+          cat > data/luminaire-stats.json <<EOF
+          {
+            "stars": $STARS,
+            "forks": $FORKS,
+            "downloads": $DOWNLOADS,
+            "updated": "$(date -u +%Y-%m-%d)"
+          }
+          EOF
+
+      - name: Commit updated stats
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/luminaire-stats.json
+          git diff --staged --quiet || git commit -m "chore: update Luminaire stats [skip ci]"
+          git push
