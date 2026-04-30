@@ -79,7 +79,7 @@
               🍴 <span id="lum-forks">…</span> forks
             </span>
             <span class="lum-stat" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;font-weight:600;color:var(--text-secondary);background:var(--tag-bg);padding:0.3rem 0.75rem;border-radius:20px;">
-              📦 <span id="lum-downloads">…</span> downloads <span style="font-weight:400;color:var(--text-muted);">(last month)</span>
+              📦 <span id="lum-downloads">…</span> downloads <span style="font-weight:400;color:var(--text-muted);">(all time)</span>
             </span>
           </div>
           <div class="pub-links" style="margin-top:0.75rem;">
@@ -164,27 +164,39 @@
 
   <script>
     function fmt(n) {
+      if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
       if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-      return n.toString();
+      return n.toLocaleString();
     }
 
     async function loadLuminaireStats() {
+      // GitHub: stars & forks
       try {
-        const [ghRes, dlRes] = await Promise.all([
-          fetch('https://api.github.com/repos/zillow/luminaire'),
-          fetch('https://pypistats.org/api/packages/luminaire/recent')
-        ]);
-        if (ghRes.ok) {
-          const gh = await ghRes.json();
-          document.getElementById('lum-stars').textContent = fmt(gh.stargazers_count);
-          document.getElementById('lum-forks').textContent = fmt(gh.forks_count);
+        const res = await fetch('https://api.github.com/repos/zillow/luminaire', {
+          headers: { 'Accept': 'application/vnd.github.v3+json' }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('lum-stars').textContent = fmt(data.stargazers_count);
+          document.getElementById('lum-forks').textContent  = fmt(data.forks_count);
         }
-        if (dlRes.ok) {
-          const dl = await dlRes.json();
-          document.getElementById('lum-downloads').textContent = fmt(dl.data.last_month);
+      } catch (e) {
+        console.warn('GitHub API error:', e);
+      }
+
+      // PyPI: all-time total downloads (sum of all "without_mirrors" records)
+      try {
+        const res = await fetch('https://pypistats.org/api/packages/luminaire/overall?mirrors=false');
+        if (res.ok) {
+          const json = await res.json();
+          // The API returns rows per date; sum the `downloads` field across all rows
+          const total = json.data.reduce((acc, row) => acc + (row.downloads || 0), 0);
+          if (total > 0) {
+            document.getElementById('lum-downloads').textContent = fmt(total);
+          }
         }
-      } catch (_) {
-        // silently keep the "…" placeholders if APIs are unavailable
+      } catch (e) {
+        console.warn('PyPI stats error:', e);
       }
     }
 
