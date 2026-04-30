@@ -70,16 +70,16 @@
           <div style="margin-top:0.75rem;color:var(--text-secondary);font-size:0.9rem;line-height:1.6;">
             Luminaire is a Python package that provides ML-driven solutions for monitoring time series data. It features automated anomaly detection, data profiling, and intelligent model selection — designed to work out of the box without manual configuration.
           </div>
-          <!-- Stats -->
-          <div style="display:flex;flex-wrap:wrap;gap:0.65rem;margin-top:1rem;">
-            <span style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;font-weight:600;color:var(--text-secondary);background:var(--tag-bg);padding:0.3rem 0.75rem;border-radius:20px;">
-              ⭐ 803 stars
+          <!-- Stats (populated dynamically) -->
+          <div style="display:flex;flex-wrap:wrap;gap:0.65rem;margin-top:1rem;" id="luminaire-stats">
+            <span class="lum-stat" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;font-weight:600;color:var(--text-secondary);background:var(--tag-bg);padding:0.3rem 0.75rem;border-radius:20px;">
+              ⭐ <span id="lum-stars">…</span> stars
             </span>
-            <span style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;font-weight:600;color:var(--text-secondary);background:var(--tag-bg);padding:0.3rem 0.75rem;border-radius:20px;">
-              🍴 66 forks
+            <span class="lum-stat" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;font-weight:600;color:var(--text-secondary);background:var(--tag-bg);padding:0.3rem 0.75rem;border-radius:20px;">
+              🍴 <span id="lum-forks">…</span> forks
             </span>
-            <span style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;font-weight:600;color:var(--text-secondary);background:var(--tag-bg);padding:0.3rem 0.75rem;border-radius:20px;">
-              📦 91K+ downloads <span style="font-weight:400;color:var(--text-muted);">(last 3 months)</span>
+            <span class="lum-stat" style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;font-weight:600;color:var(--text-secondary);background:var(--tag-bg);padding:0.3rem 0.75rem;border-radius:20px;">
+              📦 <span id="lum-downloads">…</span> downloads <span style="font-weight:400;color:var(--text-muted);">(last month)</span>
             </span>
           </div>
           <div class="pub-links" style="margin-top:0.75rem;">
@@ -162,5 +162,33 @@
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
   </footer>
 
+  <script>
+    function fmt(n) {
+      if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+      return n.toString();
+    }
+
+    async function loadLuminaireStats() {
+      try {
+        const [ghRes, dlRes] = await Promise.all([
+          fetch('https://api.github.com/repos/zillow/luminaire'),
+          fetch('https://pypistats.org/api/packages/luminaire/recent')
+        ]);
+        if (ghRes.ok) {
+          const gh = await ghRes.json();
+          document.getElementById('lum-stars').textContent = fmt(gh.stargazers_count);
+          document.getElementById('lum-forks').textContent = fmt(gh.forks_count);
+        }
+        if (dlRes.ok) {
+          const dl = await dlRes.json();
+          document.getElementById('lum-downloads').textContent = fmt(dl.data.last_month);
+        }
+      } catch (_) {
+        // silently keep the "…" placeholders if APIs are unavailable
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadLuminaireStats);
+  </script>
 </body>
 </html>
