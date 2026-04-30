@@ -184,17 +184,15 @@
         console.warn('GitHub API error:', e);
       }
 
-      // shields.io — all-time PyPI total downloads (CORS-friendly, no API key needed)
-      // Source: https://img.shields.io/pypi/dt/luminaire.json
+      // Total downloads — read from repo JSON updated daily by GitHub Actions workflow
       try {
-        const res = await fetch('https://img.shields.io/pypi/dt/luminaire.json');
+        const res = await fetch('data/luminaire-stats.json');
         if (res.ok) {
           const d = await res.json();
-          // d.message is pre-formatted e.g. "1.2M" or "540k"
-          document.getElementById('lum-downloads').textContent = d.message;
+          if (d.downloads) document.getElementById('lum-downloads').textContent = fmt(d.downloads);
         }
       } catch (e) {
-        console.warn('PyPI downloads error:', e);
+        console.warn('Downloads stats error:', e);
       }
     }
 
