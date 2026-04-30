@@ -170,15 +170,31 @@
     }
 
     async function loadLuminaireStats() {
+      // GitHub API — stars & forks (public, CORS-friendly)
       try {
-        const res = await fetch('data/luminaire-stats.json');
-        if (!res.ok) throw new Error('fetch failed');
-        const d = await res.json();
-        document.getElementById('lum-stars').textContent     = fmt(d.stars);
-        document.getElementById('lum-forks').textContent     = fmt(d.forks);
-        document.getElementById('lum-downloads').textContent = fmt(d.downloads);
+        const res = await fetch('https://api.github.com/repos/zillow/luminaire', {
+          headers: { 'Accept': 'application/vnd.github.v3+json' }
+        });
+        if (res.ok) {
+          const d = await res.json();
+          document.getElementById('lum-stars').textContent = fmt(d.stargazers_count);
+          document.getElementById('lum-forks').textContent = fmt(d.forks_count);
+        }
       } catch (e) {
-        console.warn('Could not load Luminaire stats:', e);
+        console.warn('GitHub API error:', e);
+      }
+
+      // shields.io — all-time PyPI total downloads (CORS-friendly, no API key needed)
+      // Source: https://img.shields.io/pypi/dt/luminaire.json
+      try {
+        const res = await fetch('https://img.shields.io/pypi/dt/luminaire.json');
+        if (res.ok) {
+          const d = await res.json();
+          // d.message is pre-formatted e.g. "1.2M" or "540k"
+          document.getElementById('lum-downloads').textContent = d.message;
+        }
+      } catch (e) {
+        console.warn('PyPI downloads error:', e);
       }
     }
 
